@@ -10,6 +10,7 @@ target = {
     "num_hidden_layers": 4,
     "intermediate_size": 2048,
     "attention_probs_dropout_prob": 0.1,
+    "num_labels": 5,
 }
 
 
@@ -25,4 +26,5 @@ shadow = {
     "num_hidden_layers": 4,
     "intermediate_size": 1024,
     "attention_probs_dropout_prob": 0.1,
+    "num_labels": 5,
 }
