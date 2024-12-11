@@ -27,7 +27,7 @@ I will be using a BERT structure for both the target and shadow models with inte
 - `saved_models`: Pre-trained target and shadow models are saved here.
 - `utils`: Contains utility functions required for dataset prepration, reproducability and metric calculations.
 - `experiment.ipynb`: Unedited prototype of my first attempt at this assignment which was later chopped up into individual scripts.
-- `train_target_and_shadows.py`: This script is responsible for training the target and shadow models. If the pre-trained models.
+- `train_target_and_shadows.py`: This script is responsible for training the target and shadow models.
 - `train_attacker.py`: This script is responsible for training the XGBoost attacker model.
 - `inference.py`: This script tests the trained attacked against the target model on previously unseen data.
 
@@ -58,4 +58,4 @@ $ python3 inference.py
 TODO.
 
 # TODO
-- Investigate the effect of target's over/under-fitting by running inference against different target checkpoints. 
+- Investigate the effect of target's over/under-fitting by running inference against different target checkpoints.

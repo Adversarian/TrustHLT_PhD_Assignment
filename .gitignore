@@ -165,4 +165,7 @@ cython_debug/
 *.out
 *.synctex.gz
 *.tex
-saved_models/
+saved_models/shadow**
+saved_models/target**
+saved_models/attacker/**.json
+saved_datasets/**.npz

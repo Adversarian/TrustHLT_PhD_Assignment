@@ -6,6 +6,7 @@ target_training_args = {
     "per_device_eval_batch_size": 64,
     "eval_strategy": "epoch",
     "save_strategy": "epoch",
+    "load_best_model_at_end": True,
     "report_to": "none",
 }
 
@@ -16,5 +17,6 @@ shadow_training_args = {
     "per_device_eval_batch_size": 64,
     "eval_strategy": "epoch",
     "save_strategy": "epoch",
+    "load_best_model_at_end": True,
     "report_to": "none",
 }

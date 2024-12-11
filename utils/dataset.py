@@ -24,7 +24,7 @@ def prepare_dataset(
     """
     dataset = load_dataset("yelp_review_full", split=["train+test"])[
         0
-    ].train_test_split(test_size=0.5, stratify_by_column="label")
+    ].train_test_split(test_size=0.5, stratify_by_column="label", seed=42)
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_id)
     tokenized_dataset = dataset.map(
         lambda x: tokenizer(
@@ -38,7 +38,7 @@ def prepare_dataset(
     )
     tokenized_dataset.set_format(type="torch")
     target_subset = tokenized_dataset["train"].train_test_split(
-        test_size=0.5, stratify_by_column="label"
+        test_size=0.5, stratify_by_column="label", seed=42
     )
     shadow_subsets = []
     for _ in range(n_shadows):
