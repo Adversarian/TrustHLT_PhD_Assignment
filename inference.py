@@ -88,14 +88,6 @@ def main(args):
 
     ### PLOT
     #### ROC AUC & EVAL LOSS vs. CHECKPOINT
-    # plt.figure()
-    # plt.plot(checkpoints, roc_auc_scores, marker="o", linestyle="-", color="b")
-    # plt.title("ROC AUC Scores vs. Checkpoint")
-    # plt.xlabel("Checkpoint")
-    # plt.ylabel("ROC AUC Score")
-    # plt.grid(True)
-    # plt.tight_layout()
-    # plt.savefig("figures/roc_auc_vs_checkpoints.png")
     fig, ax1 = plt.subplots()
     ax1.set_xlabel("Checkpoint")
     ax1.set_ylabel("ROC AUC Score", color="tab:red")
