@@ -6,11 +6,11 @@ target = {
     "hidden_dropout_prob": 0.1,
     "num_attention_heads": 8,
     "type_vocab_size": 2,
-    "max_position_embeddings": 512,
-    "num_hidden_layers": 4,
+    "max_position_embeddings": 128,
+    "num_hidden_layers": 6,
     "intermediate_size": 2048,
     "attention_probs_dropout_prob": 0.1,
-    "num_labels": 5,
+    "num_labels": 7,
 }
 
 
@@ -22,9 +22,9 @@ shadow = {
     "hidden_dropout_prob": 0.1,
     "num_attention_heads": 4,
     "type_vocab_size": 2,
-    "max_position_embeddings": 512,
-    "num_hidden_layers": 4,
+    "max_position_embeddings": 128,
+    "num_hidden_layers": 6,
     "intermediate_size": 1024,
     "attention_probs_dropout_prob": 0.1,
-    "num_labels": 5,
+    "num_labels": 7,
 }

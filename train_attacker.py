@@ -1,3 +1,5 @@
+from argparse import ArgumentParser
+
 import numpy as np
 import torch
 from sklearn.metrics import roc_auc_score
@@ -9,16 +11,19 @@ from transformers import AutoModelForSequenceClassification
 from xgboost import XGBClassifier
 
 from utils.dataset import prepare_dataset
+from utils.misc import get_best_checkpoint_dir
 from utils.seed import seed_everything
 
 seed_everything(42)
 
 
-def main(args={"n_shadows": 10}):
+def main(args):
     ### TRAIN ATTACKER
     # NOTE: Because the same seed was set for dataset splitting
     # the shadow subsets will be the same across runs.
-    _, _, shadow_subsets, _ = prepare_dataset()
+    _, _, shadow_subsets, _ = prepare_dataset(
+        n_shadows=args.n_shadows, tokenizer_id=args.tokenizer_id
+    )
     #### ATTACKER TRAIN DATASET CREATION
     try:
         saved_train_ds = np.load("saved_datasets/attack_train_dataset.npz")
@@ -28,12 +33,19 @@ def main(args={"n_shadows": 10}):
     except:
         print("Creating attack train dataset...")
         attack_dataset_X, attack_dataset_y = [], []
-        for i in tqdm(range(args["n_shadows"])):
+        for i in tqdm(range(args.n_shadows)):
+            checkpoint_dir = get_best_checkpoint_dir(f"saved_models/shadow_{i}")
             shadow_model = AutoModelForSequenceClassification.from_pretrained(
-                f"saved_models/shadow_{i}/checkpoint-27350"
+                checkpoint_dir
             ).cuda()
-            shadow_train_dl = DataLoader(shadow_subsets[i]["train"], batch_size=256)
-            shadow_test_dl = DataLoader(shadow_subsets[i]["test"], batch_size=256)
+            shadow_train_dl = DataLoader(
+                shadow_subsets[i]["train"],
+                batch_size=256,
+            )
+            shadow_test_dl = DataLoader(
+                shadow_subsets[i]["test"],
+                batch_size=256,
+            )
             shadow_model.eval()
             for batch in shadow_train_dl:
                 with torch.inference_mode():
@@ -41,19 +53,21 @@ def main(args={"n_shadows": 10}):
                         input_ids=batch["input_ids"].cuda(),
                         attention_mask=batch["attention_mask"].cuda(),
                     )["logits"]
-                probs = F.softmax(logits, dim=-1).cpu().numpy()
-                attack_dataset_X.append(probs)
-                attack_dataset_y.append(np.ones((len(probs), 1)))
+                probs = F.softmax(logits, dim=-1)
+                top_p, _ = probs.topk(k=args.k, dim=-1)
+                attack_dataset_X.append(top_p.cpu().numpy())
+                attack_dataset_y.append(np.ones((len(top_p), 1)))
             for batch in shadow_test_dl:
                 with torch.inference_mode():
                     logits = shadow_model(
                         input_ids=batch["input_ids"].cuda(),
                         attention_mask=batch["attention_mask"].cuda(),
                     )["logits"]
-                probs = F.softmax(logits, dim=-1).cpu().numpy()
-                attack_dataset_X.append(probs)
-                attack_dataset_y.append(np.zeros((len(probs), 1)))
-        attack_X_train = np.vstack(attack_dataset_X).sort(axis=-1)
+                probs = F.softmax(logits, dim=-1)
+                top_p, _ = probs.topk(k=args.k, dim=-1)
+                attack_dataset_X.append(top_p.cpu().numpy())
+                attack_dataset_y.append(np.zeros((len(top_p), 1)))
+        attack_X_train = np.vstack(attack_dataset_X)
         attack_y_train = np.vstack(attack_dataset_y)
         np.savez_compressed(
             "saved_datasets/attack_train_dataset",
@@ -65,7 +79,7 @@ def main(args={"n_shadows": 10}):
     base_xgb_attacker = XGBClassifier(objective="binary:logistic", eval_metric="auc")
     gridsearch_clf = GridSearchCV(
         base_xgb_attacker,
-        {"max_depth": [1, 2, 3], "n_estimators": [5, 10, 50]},
+        {"max_depth": [1, 2, 3, 4, 5], "n_estimators": [5, 10, 20, 50]},
         verbose=1,
     )
     gridsearch_clf.fit(attack_X_train, attack_y_train)
@@ -78,4 +92,25 @@ def main(args={"n_shadows": 10}):
 
 
 if __name__ == "__main__":
-    main()
+    parser = ArgumentParser(description="Script for training attacker model.")
+    parser.add_argument(
+        "-n",
+        "--n_shadows",
+        default=5,
+        type=int,
+        help="Number of shadow models to use. This must be consistent with during script runs. Defaults to `5`.",
+    )
+    parser.add_argument(
+        "-t",
+        "--tokenizer_id",
+        default="bert-base-uncased",
+        help="Tokenizer to use for the bert model. Defaults to `bert-base-uncased`.",
+    )
+    parser.add_argument(
+        "-k",
+        type=int,
+        default=7,
+        help="`k` for top-k probabiltiies to use to build dataset. Defaults to `7`.",
+    )
+    args = parser.parse_args()
+    main(args)

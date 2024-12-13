@@ -1,3 +1,5 @@
+from argparse import ArgumentParser
+
 from transformers import (
     BertConfig,
     BertForSequenceClassification,
@@ -15,14 +17,11 @@ seed_everything(42)
 
 
 def main(
-    args={
-        "n_shadows": 10,
-        "tokenizer_id": "bert-base-uncased",
-    },
+    args,
 ):
     ### PREPARE DATASETS
     _, target_subset, shadow_subsets, _ = prepare_dataset(
-        n_shadows=args["n_shadows"], tokenizer_id=args["tokenizer_id"]
+        n_shadows=args.n_shadows, tokenizer_id=args.tokenizer_id
     )
 
     ### TRAIN TARGET
@@ -40,8 +39,9 @@ def main(
     target_trainer.train()
 
     ### TRAIN SHADOWS
-    shadow_bert_config = BertConfig(**shadow)
-    for i in range(args["n_shadows"]):
+    cfg = shadow if not args.shadow_same_as_target else target
+    shadow_bert_config = BertConfig(**cfg)
+    for i in range(args.n_shadows):
         shadow_classifier = BertForSequenceClassification(config=shadow_bert_config)
         training_args = TrainingArguments(
             output_dir=f"saved_models/shadow_{i}", **shadow_training_args
@@ -58,4 +58,26 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    parser = ArgumentParser(description="Script for training target and shadow models.")
+    parser.add_argument(
+        "-n",
+        "--n_shadows",
+        type=int,
+        default=5,
+        help="Number of shadow models to use. This must be consistent with during script runs. Defaults to `5`.",
+    )
+    parser.add_argument(
+        "-t",
+        "--tokenizer_id",
+        type=str,
+        default="bert-base-uncased",
+        help="Tokenizer to use for the bert model. Defaults to `bert-base-uncased`.",
+    )
+    parser.add_argument(
+        "-sst",
+        "--shadow_same_as_target",
+        action="store_true",
+        help="Set shadow model architecture to be exactly the same as target model.",
+    )
+    args = parser.parse_args()
+    main(args)
