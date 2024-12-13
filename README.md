@@ -59,9 +59,11 @@ Similar to how the training dataset for the attacker model was produced in the p
 
 # Results
 All 7 class probabilities from the shadow models were used to train the attacker. Below are their feature importances based on information gain. From this we can glean that the second probability contributed the most towards the decision of the attacker.
+
 ![Feature Importances](https://github.com/Adversarian/TrustHLT_PhD_Assignment/blob/main/figures/feature_importances.png)
 
 Further more, the ROC-AUC of the attacker model and target model's evaluation loss were graphed against different checkpoints of the target model. The results can be seen below.
+
 ![AUC & Eval Loss vs. Checkpoint](https://github.com/Adversarian/TrustHLT_PhD_Assignment/blob/main/figures/roc_auc_and_eval_loss_vs_checkpoints.png)
 
 This is surprising because based on the findings of Shokri et al., I expected generalization error (in this case "eval loss") to be correlated to attack success but this graph seems to imply otherwise. I suspect this might be due to an error in my implmenetation but I was unable to rectify it despite my best efforts given the time constraint.
