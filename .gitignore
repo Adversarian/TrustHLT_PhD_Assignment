@@ -170,3 +170,4 @@ saved_models/target**
 saved_models/attacker/**.json
 saved_datasets/**.npz
 *.ipynb
+*.zip

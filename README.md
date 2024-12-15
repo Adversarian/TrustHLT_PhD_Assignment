@@ -33,6 +33,12 @@ I will be using a BERT structure for both the target and shadow models with inte
 
 *All scripts have documentation where applicable*
 # Usage
+## 0. (OPTIONAL) Download the Pre-trained Model Weights
+You may download the all the pretrained models including the attacker, shadow models and target model used for this experiment from [this link](https://drive.google.com/file/d/129OBC19Nkrdp1c9nm4A-P-V84AIdhXK6/view?usp=sharing).
+
+Extract the contents of the zip file to the `saved_models` directory.
+
+After doing so you may skip steps 2 and 3 below and go straight to running the experiment from step 4.
 ## 1. Installing the Project Requirements
 ```bash
 $ pip install -r requirements.txt
