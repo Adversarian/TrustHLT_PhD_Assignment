@@ -12,7 +12,7 @@ I will be using a BERT structure for both the target and shadow models with inte
 
 ## Summary
 - **Victim Downstream Task**: Sequence Intent Classification
-- **Downstream Dataset**: [SNIPS](https://huggingface.co/datasets/benayas/snipsl)
+- **Downstream Dataset**: [SNIPS](https://huggingface.co/datasets/benayas/snips)
 - **MIA Method**: MIA through shadow models by [Shokri et al.](https://arxiv.org/abs/1610.05820)
 - **Attacker Access Type**: Grey-box
 - **Target Architecture**: BERT
